@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Solver</title>
+</head>
+
+<body>
+  <form id="equation-form">
+    <input id="equation">
+    <button type="submit">Solve</button>
+  </form>
+  <div id="results"></div>
+  <script>
+
+    // ==================== Variables
+
+    const form = document.querySelector('#equation-form')
+    const input = document.querySelector('#equation')
+    const res = document.querySelector('#results')
+    const string1 = '1+2+3+4324/23434-424*111'
+    const string2 = string1
+    const bodmas = [
+      {
+        name: 'division',
+        rule: '/'
+      },
+      {
+        name: 'multiplication',
+        rule: '*'
+      },
+      {
+        name: 'addition',
+        rule: '+'
+      },
+      {
+        name: 'subtraction',
+        rule: '-'
+      },
+    ]
+
+
+    // ==================== Event Listeners And Function Calls
+
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      let inputString = input.value
+      let equString = inputString
+
+
+      for (let expr of bodmas) {
+        const regExp = extractOperandAndOperatorStringRegex(expr.rule)
+        let res
+
+        while (res = regExp.exec(equString)) {
+          let a = seperateDigitsAndRule(res[0], expr.rule)
+          a = a.filter(item => item != '')
+          const ans = calculateEquation(a, expr.rule)
+          equString = equString.replace(regExp, ans)
+        }
+
+      }
+
+      res.innerText = equString
+    })
+
+
+    // ==================== Function Definitions
+
+    function extractOperandAndOperatorStringRegex(rule) {
+      return new RegExp(`(\\d[.]?)+[ ]?\\${rule}[ ]?(\\d[.]?)+`, 'g')
+    }
+
+    function seperateDigitsAndRule(string, rule) {
+      const regExp = new RegExp(`(?<firstDigit>(?<=\\${rule})[ ]?(\\d[.]?)+)?(?<secondDigit>(\\d[.]?)+[ ]?(?=\\${rule}))?`, 'g')
+      return string.match(regExp)
+    }
+
+    function isRuleExists(string, regex) {
+      return regex.test(string)
+    }
+
+    function calculateEquation(digitsArray, rule) {
+      let ans = 0
+      switch (rule) {
+        case '/':
+          ans = parseFloat(digitsArray[0]) / parseFloat(digitsArray[1])
+          break
+        case '*':
+          ans = parseFloat(digitsArray[0]) * parseFloat(digitsArray[1])
+          break
+        case '+':
+          ans = parseFloat(digitsArray[0]) + parseFloat(digitsArray[1])
+          break
+        case '-':
+          ans = parseFloat(digitsArray[0]) - parseFloat(digitsArray[1])
+          break
+      }
+
+      return ans
+    }
+
+
+    // for (let expr of bodmas) {
+    //   const firstDigitRegx = new RegExp(`\\d+(?=\\${expr.rule})`, 'g')
+    //   const secondDigitRegx = new RegExp(`(?<=\\${expr.rule})\\d+`, 'g')
+    //   const firstDigit = string2.match(firstDigitRegx)
+    //   const secondDigit = string2.match(secondDigitRegx)
+
+    //   console.log(expr.name)
+    //   console.log(firstDigitRegx, secondDigitRegx)
+    //   console.log(firstDigit, secondDigit)
+    //   expr[firstDigit] = firstDigit
+    //   expr[secondDigit] = secondDigit
+    // }
+  </script>
+</body>
+
+</html>

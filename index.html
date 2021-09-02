@@ -47,40 +47,101 @@
 
     form.addEventListener('submit', e => {
       e.preventDefault()
-      let inputString = input.value
-      let equString = inputString
-
-
-      for (let expr of bodmas) {
-        const regExp = extractOperandAndOperatorStringRegex(expr.rule)
-        let res
-
-        while (res = regExp.exec(equString)) {
-          let a = seperateDigitsAndRule(res[0], expr.rule)
-          a = a.filter(item => item != '')
-          const ans = calculateEquation(a, expr.rule)
-          equString = equString.replace(regExp, ans)
-        }
-
-      }
-
-      res.innerText = equString
+      const inputString = input.value
+      const result = executeStringOperations(inputString)
+      res.innerText = result
     })
 
 
     // ==================== Function Definitions
 
-    function extractOperandAndOperatorStringRegex(rule) {
-      return new RegExp(`(\\d[.]?)+[ ]?\\${rule}[ ]?(\\d[.]?)+`, 'g')
+    function executeStringOperations(str) {
+      let startFrom = 0
+
+      while (hasBrackets(str)) {
+        const { res, newCounter } = getStringBetweenBrackets(str, startFrom)
+        const substr = str.substring(startFrom, newCounter + 1)
+        str = str.replace(substr, res)
+        startFrom = res.length
+        console.log(str)
+      }
+
+      str = evaluateString(str)
+
+      return str
+    }
+
+    function getStringBetweenBrackets(str, startFrom) {
+      let counter = startFrom
+      let start = false
+      let newStr = ''
+      let bracketedString = ''
+
+      while (counter < str.length) {
+        if (start && str[counter] === '(') {
+          const { res, newCounter } = getStringBetweenBrackets(str.substr(counter), 0)
+          bracketedString += res
+          counter += (newCounter + 1)
+        }
+        if (str[counter] === '(') {
+          start = true
+        }
+        if (start && str[counter] === ')') {
+          start = false
+          bracketedString = evaluateString(bracketedString)
+          break
+        }
+        if (start && !['(', ')'].includes(str[counter])) {
+          bracketedString += str[counter]
+        } else if (!start && !['(', ')'].includes(str[counter])) {
+          newStr += str[counter]
+        }
+
+        counter += 1
+      }
+
+      newStr += bracketedString
+
+      return { res: newStr, newCounter: counter }
+    }
+
+    function evaluateString(string) {
+      let equString = string
+
+      for (let expr of bodmas) {
+        const regExpGlobal = extractOperandAndOperatorStringRegexGlobal(equString, expr.rule)
+        let res
+
+        while (res = regExpGlobal.exec(equString)) {
+          let a = seperateDigitsAndRule(res[0], expr.rule)
+          console.log(res[0], a)
+          const ans = calculateEquation(a, expr.rule)
+          console.log(ans)
+          const regExp = extractOperandAndOperatorStringRegex(equString, expr.rule)
+          equString = equString.replace(regExp, ans)
+          regExpGlobal.lastIndex = 0
+        }
+
+      }
+
+      return equString
+    }
+
+    function extractOperandAndOperatorStringRegexGlobal(string, rule) {
+      return new RegExp(`(\\-)??\\d+(\\.{1}\\d+)?[ ]?\\${rule}[ ]?\\d+(\\.{1}\\d+)?`, 'g')
+    }
+    function extractOperandAndOperatorStringRegex(string, rule) {
+      return new RegExp(`(\\-)??\\d+(\\.{1}\\d+)?[ ]?\\${rule}[ ]?\\d+(\\.{1}\\d+)?`)
     }
 
     function seperateDigitsAndRule(string, rule) {
-      const regExp = new RegExp(`(?<firstDigit>(?<=\\${rule})[ ]?(\\d[.]?)+)?(?<secondDigit>(\\d[.]?)+[ ]?(?=\\${rule}))?`, 'g')
+      const regExp = /(\-{1})?[ ]?\d+(\.\d+)?/g
       return string.match(regExp)
     }
 
-    function isRuleExists(string, regex) {
-      return regex.test(string)
+    function hasBrackets(str) {
+      const regExp = /\(/g
+      return regExp.test(str)
     }
 
     function calculateEquation(digitsArray, rule) {
@@ -96,26 +157,12 @@
           ans = parseFloat(digitsArray[0]) + parseFloat(digitsArray[1])
           break
         case '-':
-          ans = parseFloat(digitsArray[0]) - parseFloat(digitsArray[1])
+          ans = parseFloat(digitsArray[0]) - Math.abs(parseFloat(digitsArray[1]))
           break
       }
 
       return ans
     }
-
-
-    // for (let expr of bodmas) {
-    //   const firstDigitRegx = new RegExp(`\\d+(?=\\${expr.rule})`, 'g')
-    //   const secondDigitRegx = new RegExp(`(?<=\\${expr.rule})\\d+`, 'g')
-    //   const firstDigit = string2.match(firstDigitRegx)
-    //   const secondDigit = string2.match(secondDigitRegx)
-
-    //   console.log(expr.name)
-    //   console.log(firstDigitRegx, secondDigitRegx)
-    //   console.log(firstDigit, secondDigit)
-    //   expr[firstDigit] = firstDigit
-    //   expr[secondDigit] = secondDigit
-    // }
   </script>
 </body>
 

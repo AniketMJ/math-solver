@@ -63,7 +63,6 @@
         const substr = str.substring(startFrom, newCounter + 1)
         str = str.replace(substr, res)
         startFrom = res.length
-        console.log(str)
       }
 
       str = evaluateString(str)
@@ -114,9 +113,7 @@
 
         while (res = regExpGlobal.exec(equString)) {
           let a = seperateDigitsAndRule(res[0], expr.rule)
-          console.log(res[0], a)
           const ans = calculateEquation(a, expr.rule)
-          console.log(ans)
           const regExp = extractOperandAndOperatorStringRegex(equString, expr.rule)
           equString = equString.replace(regExp, ans)
           regExpGlobal.lastIndex = 0

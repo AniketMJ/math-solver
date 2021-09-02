@@ -123,8 +123,6 @@
         str = str.replace(closeBracketsRegExp, '$<closeParenthesis> * $<digits>')
       }
 
-      console.log(str)
-
       while (hasBrackets(str)) {
         const { res, newCounter } = getStringBetweenBrackets(str, startFrom)
         const substr = str.substring(startFrom, newCounter + 1)

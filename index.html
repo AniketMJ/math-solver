@@ -24,6 +24,7 @@
       font-size: 2rem;
       border: 2px solid crimson;
       color: rgb(61, 61, 61);
+      border-radius: 10px;
     }
 
     button {
@@ -33,6 +34,7 @@
       color: white;
       border: none;
       letter-spacing: 2px;
+      border-radius: 10px;
       cursor: pointer;
     }
 
@@ -58,6 +60,10 @@
     const input = document.querySelector('#equation')
     const res = document.querySelector('#results')
     const bodmas = [
+      {
+        name: 'power',
+        rule: '^'
+      },
       {
         name: 'division',
         rule: '/'
@@ -91,6 +97,19 @@
 
     function executeStringOperations(str) {
       let startFrom = 0
+
+
+      if (hasBrackets(str)) {
+        let bracketsRegExp = /(?<closeParenthesis>\))(?<openParenthesis>\()/g
+        let openBracketsRegExp = /(?<digits>\d+([\.]?\d+)?)(?<openParenthesis>\()/g
+        let closeBracketsRegExp = /(?<closeParenthesis>\))(?<digits>\d+([\.]?\d+)?)/g
+
+        str = str.replace(bracketsRegExp, '$<closeParenthesis> * $<openParenthesis>')
+        str = str.replace(openBracketsRegExp, '$<digits> * $<openParenthesis>')
+        str = str.replace(closeBracketsRegExp, '$<closeParenthesis> * $<digits>')
+      }
+
+      console.log(str)
 
       while (hasBrackets(str)) {
         const { res, newCounter } = getStringBetweenBrackets(str, startFrom)
@@ -178,6 +197,9 @@
     function calculateEquation(digitsArray, rule) {
       let ans = 0
       switch (rule) {
+        case '^':
+          ans = parseFloat(digitsArray[0]) ** parseFloat(digitsArray[1])
+          break
         case '/':
           ans = parseFloat(digitsArray[0]) / parseFloat(digitsArray[1])
           break

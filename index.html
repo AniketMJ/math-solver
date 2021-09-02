@@ -22,26 +22,30 @@
     input {
       padding: 1em .6em;
       font-size: 2rem;
-      border: 2px solid crimson;
+      border: 2px solid rgb(110, 57, 207);
       color: rgb(61, 61, 61);
-      border-radius: 10px;
+      border-radius: 10px 0 0 10px;
     }
 
     button {
       font-size: 2rem;
       padding: 1em .6em;
-      background-color: crimson;
+      background-color: rgb(110, 57, 207);
       color: white;
       border: none;
       letter-spacing: 2px;
-      border-radius: 10px;
+      border-radius: 0 10px 10px 0;
       cursor: pointer;
     }
 
     #results {
       margin-top: 1rem;
       font-size: 2rem;
-      color: rgb(9, 59, 82)
+      color: rgb(0, 102, 63)
+    }
+
+    #results.err {
+      color: crimson
     }
   </style>
 </head>
@@ -88,6 +92,16 @@
     form.addEventListener('submit', e => {
       e.preventDefault()
       const inputString = input.value
+
+      // if the string is empty or has letters in it, return
+      if (!inputString || inputString?.match(/[a-zA-Z]/g)?.length > 0) {
+        res.classList.add('err')
+        res.innerText = 'Enter an expression to calculate!'
+
+        return
+      }
+
+      res.classList.remove('err')
       const result = executeStringOperations(inputString)
       res.innerText = result
     })

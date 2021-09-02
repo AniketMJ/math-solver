@@ -6,11 +6,47 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Math Solver</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      display: grid;
+      place-content: center;
+    }
+
+    input {
+      padding: 1em .6em;
+      font-size: 2rem;
+      border: 2px solid crimson;
+      color: rgb(61, 61, 61);
+    }
+
+    button {
+      font-size: 2rem;
+      padding: 1em .6em;
+      background-color: crimson;
+      color: white;
+      border: none;
+      letter-spacing: 2px;
+      cursor: pointer;
+    }
+
+    #results {
+      margin-top: 1rem;
+      font-size: 2rem;
+      color: rgb(9, 59, 82)
+    }
+  </style>
 </head>
 
 <body>
   <form id="equation-form">
-    <input id="equation">
+    <input id="equation" placeholder="Enter here...">
     <button type="submit">Solve</button>
   </form>
   <div id="results"></div>
@@ -21,8 +57,6 @@
     const form = document.querySelector('#equation-form')
     const input = document.querySelector('#equation')
     const res = document.querySelector('#results')
-    const string1 = '1+2+3+4324/23434-424*111'
-    const string2 = string1
     const bodmas = [
       {
         name: 'division',
@@ -125,10 +159,10 @@
     }
 
     function extractOperandAndOperatorStringRegexGlobal(string, rule) {
-      return new RegExp(`(\\-)??\\d+(\\.{1}\\d+)?[ ]?\\${rule}[ ]?\\d+(\\.{1}\\d+)?`, 'g')
+      return new RegExp(`(\\-)?\\d+(\\.{1}\\d+)?[ ]?\\${rule}[ ]?(\\-)?\\d+(\\.{1}\\d+)?`, 'g')
     }
     function extractOperandAndOperatorStringRegex(string, rule) {
-      return new RegExp(`(\\-)??\\d+(\\.{1}\\d+)?[ ]?\\${rule}[ ]?\\d+(\\.{1}\\d+)?`)
+      return new RegExp(`(\\-)?\\d+(\\.{1}\\d+)?[ ]?\\${rule}[ ]?(\\-)?\\d+(\\.{1}\\d+)?`)
     }
 
     function seperateDigitsAndRule(string, rule) {
@@ -160,6 +194,7 @@
 
       return ans
     }
+
   </script>
 </body>
 
